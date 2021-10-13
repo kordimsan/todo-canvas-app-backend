@@ -1,7 +1,7 @@
 theme: /
 
     state: getCir
-        q!: (~показать)
+        q!: (~показать|покажи)
             $AnyText::anyText
         
         script:
