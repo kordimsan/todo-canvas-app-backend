@@ -6,6 +6,13 @@ function addNote(note, context) {
     }, context, "udovolstvie");
 }
 
+function getTable(table, context) {
+    addAction({
+        type: "get_table",
+        table: table,
+    }, context, "udovolstvie");
+}
+
 function doneNote(id, context){
     addAction({
         type: "done_note",
