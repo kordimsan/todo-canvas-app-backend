@@ -1,8 +1,7 @@
 theme: /
     
     state: getCirByClick
-        event!: done
-        event!: DONE
+        event!: cir
 
         script:
             var request = getRequest($context);
