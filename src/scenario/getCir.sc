@@ -1,5 +1,23 @@
 theme: /
+    
+    state: getCirByClick
+        event!: done
+        event!: DONE
 
+        script:
+            var request = getRequest($context);
+            var scenario = null;
+            if (request &&
+                request.payload &&
+                request.payload.meta &&
+                request.payload.meta.current_app &&
+                request.payload.meta.current_app.state &&
+                request.payload.meta.current_app.state.scenario
+            ) {
+                var scenario = request.payload.meta.current_app.state.scenario;
+            }
+                
+    
     state: getCir
         q!: (~показать|покажи)
             $AnyText::anyText
