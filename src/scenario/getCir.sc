@@ -51,7 +51,7 @@ theme: /
             $context.response.replies = $context.response.replies || [];
             $context.response.replies.push(replyData);
             
-        a: Вот!
+        a: Вот Вот!
                 
     
     state: getCir
