@@ -7,6 +7,8 @@ theme: /
             var command = {
                 "type": "smart_app_data",
                 "smart_app_data": {
+                    "scenario": $request.data.eventData.params.scenario,
+                    "month": $request.data.eventData.params.month,
                     "text": "",
                     "tableTitle": "Влияние ГОСБ на CIR ТБ",
                     "tableSubtitle": $request.data.eventData.params.month,
