@@ -9,7 +9,7 @@ theme: /
                 "smart_app_data": {
                     "text": "",
                     "tableTitle": "Влияние ГОСБ на CIR ТБ",
-                    "tableSubtitle": "Период: Январь-Июнь 2021",
+                    "tableSubtitle": $request.data.eventData.params.month,
                     "tableHeaders": ["Название", "Факт", "План", "Прогноз", "Влияние"],
                     "tableDataNames": [["РБ+БП+УСБ"], ["КИБ"], ["УБ"], ["БСП"]],
                     "tableData": [
