@@ -11,6 +11,17 @@ sts:
 caila:
   noMatchThreshold: 0.2
 
+scriptsPreLoad:
+  global:
+    - /jslib/moment.min.js
+    - /jslib/underscore.js
+    - /jsapi/common.js
+    - /jsapi/http.js
+    - /jsapi/smartPush.js
+  local:
+    - /jsapi/mail.js
+    - /jsapi/reactions.js
+
 tests:
   include:
     - test.xml

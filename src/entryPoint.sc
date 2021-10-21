@@ -1,53 +1,118 @@
-require: slotfilling/slotFilling.sc
-  module = sys.zb-common
-  
-# Подключение javascript обработчиков
-require: js/getters.js
-require: js/reply.js
-require: js/actions.js
-require: js/findItem.js
+require: js/mws_query.js
+require: scenario/autocomment/cir.sc
+require: scenario/autocomment/rank.sc
+require: scenario/autocomment/expenses.sc
+require: scenario/autocomment/preview.sc
+require: scenario/autocomment/smotr-konkurs.sc
 
-# Подключение сценарных файлов
-require: scenario/addNote.sc
-require: scenario/doNote.sc
-require: scenario/deleteNote.sc
-require: scenario/serverActions.sc
-require: scenario/getCir.sc
-
+require: js/cards.js
+require: js/requests.js
+require: js/roles.js
+require: scenario/find_roles/find_roles.sc
 
 patterns:
-    $AnyText = $nonEmptyGarbage
-    
-    # Паттерны для запуска сценария
-    $OpenSkipWords = (хочу|мне|мое|моё|пожалуйста|в|прошу|тебя|может|с)
-    $OpenKeyWords = (включи|включить|включай|запусти|запустить|запускай|играть|
-        поиграть|поиграем|навык|игра|игру|скил|скилл|приложение|апп|сыграем|
-        открой|поиграй со мной|сыграть|давай играть|активируй|давай|поиграем)
-    $projectName = (Название вашего навыка)
-
+    $expCategory = $regexp<.*>
 
 theme: /
-    state: Запуск
-        # При запуске приложения с кнопки прилетит сообщение /start.
-        q!: $regex</start>
-        
-        # При запуске приложения с голоса прилетит сказанная фраза.
-        q!: [$repeat<$OpenSkipWords>] 
-            $repeat<$OpenKeyWords>
-            [$repeat<$OpenSkipWords>] 
-            $projectName
+    state: start
+        q!: * *start
+        a: Привет, Мария!
         script:
-            log($jsapi.cailaService.getCurrentClassifierToken());
-            $temp.appeal = "official"//$request.rawRequest.payload.character.appeal;
+            $session.token = getToken();
+        
             
-        if: $temp.appeal == "official"
-            a: Добро пожаловать в заметки! Чтобы добавить новую, просто скажите "Запомни" и  нужный текст.
-        elseif: $temp.appeal == "no_official"
-            a: Добро пожаловать в заметки! Чтобы добавить новую, просто скажи "Запомни" и  нужный текст.
-        else:
-            a: Добро пожаловать в заметки!
+        go: /getPreview
+    
+    state: init_find_roles
+        intent!: /find_roles
+        go!: /get_role_list
+    
+    state: init_preview
+        intent!: /cir
+        script: $session.scenario = 1
+        script:
+            $session.token = getToken();
+            $session.year = $jsapi.dateForZone("Europe/Moscow","yyyy");
+            $session.month = $jsapi.dateForZone("Europe/Moscow","MM");
+            $session.month = "07";
+        script:
+            $session.tb = "Байкальский банк";
+        go!: /getPreview
+    
+    state: init_rank
+        intent!: /rank
+        script: $session.scenario = 6
+        script:
+            $session.token = getToken();
+            $session.year = $jsapi.dateForZone("Europe/Moscow","yyyy");
+            $session.month = $jsapi.dateForZone("Europe/Moscow","MM");
+            $session.month = "07";
+        script:
+            $session.tb = "Байкальский банк";
+        go!: /getRank
 
-
-    state: Fallback
-        event!: noMatch
-        a: Я не понимаю.
+    state: init_expenses
+        intent!: /expenses
+        script: $session.scenario = 3
+        script:
+            $session.token = getToken();
+            $session.year = $jsapi.dateForZone("Europe/Moscow","yyyy");
+            $session.month = $jsapi.dateForZone("Europe/Moscow","MM");
+            $session.month = "07";
+        script:
+            $session.tb = "Байкальский банк";
+        go!: /getExpenses
+    
+    state: getPeriod
+        script:
+            var $session = $jsapi.context().session;
+            $response.replies = $response.replies || [];
+            var reply = {"type":"text", "text": "За какой период нужен анализ? Выберите или напишите ваш вариант"};
+            $response.replies.push(reply);
+        
+        
+        
+        buttons:
+            "Последний завершенный год" -> lastYear
+        buttons:
+            "Последний завершенный квартал" -> lastQuarter
+        buttons:
+            "Первое полугодие" -> firtsHalfYear
+        
+        state: 4
+            q!: * @duckling.date *
+            script:
+                $session.year = $parseTree.value.year;
+                $session.month = ("0" + $parseTree.value.month).slice(-2);
+            go!: /getPreview
+        
+        state: lastYear
+            script:
+                $session.year = $jsapi.dateForZone("Europe/Moscow","yyyy")-1;
+                $session.month = "12";
+            go!: /getPreview
+            
+        state: lastQuarter
+            script:
+                $session.year = $jsapi.dateForZone("Europe/Moscow","yyyy");
+                $session.month = "06";
+            go!: /getPreview
+            
+        state: firtsHalfYear
+            script:
+                $session.year = $jsapi.dateForZone("Europe/Moscow","yyyy");
+                $session.month = "06";
+            go!: /getPreview
+        
+    state: showPeriod
+        a: {{$session.year}} - {{$session.month}}
+    
+    state: errorNode
+        script:
+            $jsapi.log($session)
+        a: Ошибка {{$session.response.status}}
+            {{$session.response.error.error}}
+    
+    state: finish
+        a: Спасибо за визит!
+        EndSession:
