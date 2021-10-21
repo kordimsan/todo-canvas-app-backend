@@ -1,11 +1,11 @@
 function post_request_mws_dev(url, body) {
-    $http.config({
-        authService: {
-            service: 'tls',
-            cert: '$mws_cert',
-            key: '$mws_key'
-        }
-    });
+    // $http.config({
+    //     authService: {
+    //         service: 'tls',
+    //         cert: '$mws_cert',
+    //         key: '$mws_key'
+    //     }
+    // });
     var response = $http.post(url, {
         "headers": {
             "content-type": "application/json"
@@ -24,7 +24,8 @@ function getToken() {
 }
 
 function getData(params) {
-    var url = "https://dfsa-autocomment-1-10000.ci00324559-dev-mws.apps.test-ose.ca.sbrf.ru/dfsa-autocomment/predict";
+    // var url = "https://dfsa-autocomment-1-10000.ci00324559-dev-mws.apps.test-ose.ca.sbrf.ru/dfsa-autocomment/predict";
+    var url = "https://boiling-oasis-65608.herokuapp.com/predict";
     
     var response = post_request_mws_dev(url, params);
     $jsapi.log("RESP INFO: " + JSON.stringify(response.data));
