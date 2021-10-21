@@ -14,6 +14,70 @@ theme: /
         else:
             go!: /errorNode
         
+    state: getPreviewByClick
+        event!: preview
+        
+        script:
+            var params = {
+                "id": 1,
+                "tb": $session.tb,
+                "year": parseInt($request.data.eventData.params.year),
+                "month": parseInt($request.data.eventData.params.month)
+            };
+            $session.response = getData(params);
+            var $session = $jsapi.context().session;
+            var texts = $session.response.data.result.texts;
+            var tables = $session.response.data.result.tables
+            
+            var command = {
+                "type": "smart_app_data",
+                "smart_app_data": {
+                    "scenario": $request.data.eventData.params.scenario,
+                    "month": $request.data.eventData.params.month,
+                    "text": "",
+                    "tableTitle": "Влияние ГОСБ на CIR ТБ",
+                    "tableSubtitle": $request.data.eventData.params.month,
+                    "tableHeaders": ["Название", "Факт", "План", "Прогноз", "Влияние"],
+                    "tableDataNames": [["РБ+БП+УСБ"], ["КИБ"], ["УБ"], ["БСП"]],
+                    "tableData": [
+                        [
+                            ["20", "%", "#FA6D20"],
+                            ["2000", "тыс.руб.", "#24B23E"],
+                            ["1", "", "#FA6D20"],
+                            ["-10", "%", "#FA6D20"],
+                        ],
+                        [
+                            ["100", "%", "#24B23E"],
+                            ["-200", "тыс.руб.", "#FFFFFF"],
+                            ["2", "", "#24B23E"],
+                            ["15", "%", "#FA6D20"],
+                        ],
+                        [
+                            ["-100", "%", "#FA6D20"],
+                            ["1,1", "тыс.руб.", "#FFFFFF"],
+                            ["12.3", "", "#FA6D20"],
+                            ["12,2", "%", "#FFFFFF"],
+                        ],
+                        [
+                            ["1", "%", "#FFFFFF"],
+                            ["321 312", "тыс.руб.", "#FA6D20"],
+                            ["4", "", "#24B23E"],
+                            ["33", "%", "#FFFFFF"],
+                        ],
+                    ]
+                }
+            };
+            var emotion = "udovolstvie";
+            var body = {emotion: emotion, items: [{command: command}]};
+            
+            var replyData = {
+                type: "raw",
+                body: body
+            };    
+            $context.response.replies = $context.response.replies || [];
+            $context.response.replies.push(replyData);
+    
+    
     state: showPreview
         script:
             var $session = $jsapi.context().session;
