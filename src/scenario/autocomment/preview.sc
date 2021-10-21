@@ -15,7 +15,7 @@ theme: /
             go!: /errorNode
         
     state: getPreviewByClick
-        event!: preview
+        event!: cir
         
         script:
             var params = {
@@ -34,7 +34,7 @@ theme: /
                 "smart_app_data": {
                     "scenario": $request.data.eventData.params.scenario,
                     "month": $request.data.eventData.params.month,
-                    "text": "",
+                    "text": texts.join("\n"),
                     "tableTitle": "Влияние ГОСБ на CIR ТБ",
                     "tableSubtitle": $request.data.eventData.params.month,
                     "tableHeaders": ["Название", "Факт", "План", "Прогноз", "Влияние"],
